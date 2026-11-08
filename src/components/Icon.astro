@@ -8,6 +8,7 @@ interface Props {
 		| 'arrow-up'
 		| 'article'
 		| 'user'
+		| 'projects'
 		| 'link'
 		| 'mail';
 	size?: number;
@@ -66,6 +67,14 @@ const { name, size = 20, class: className = '' } = Astro.props;
 		<>
 			<circle cx="12" cy="8" r="3.5" />
 			<path d="M5 20a7 7 0 0 1 14 0" />
+		</>
+	)}
+	{name === 'projects' && (
+		<>
+			<rect x="3.5" y="3.5" width="7" height="7" rx="1.5" />
+			<rect x="13.5" y="3.5" width="7" height="7" rx="1.5" />
+			<rect x="3.5" y="13.5" width="7" height="7" rx="1.5" />
+			<rect x="13.5" y="13.5" width="7" height="7" rx="1.5" />
 		</>
 	)}
 	{name === 'link' && (

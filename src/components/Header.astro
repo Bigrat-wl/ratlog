@@ -32,6 +32,14 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
 			<Icon name="user" size={20} class="nav-icon" />
 		</a>
 		<a
+			href="/projects"
+			class:list={['nav-link', { active: isActive('/projects') }]}
+			title="Projects"
+		>
+			<span class="nav-label">Projects</span>
+			<Icon name="projects" size={20} class="nav-icon" />
+		</a>
+		<a
 			href="/friends"
 			class:list={['nav-link', { active: isActive('/friends') }]}
 			title="Friends"
@@ -239,6 +247,12 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
 
 		.site-nav :global(.nav-icon) {
 			display: block;
+		}
+	}
+
+	@media (max-width: 400px) {
+		.site-nav {
+			gap: 0.7rem;
 		}
 	}
 </style>

@@ -1,0 +1,214 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { PROJECTS } from '../data/projects';
+
+const GITHUB = 'https://github.com/Bigrat-wl';
+---
+
+<BaseLayout title="Projects" description="项目：一些我做过的作品。">
+	<div class="prose page-head">
+		<h1>Projects</h1>
+		<p>做过的一些东西，大多在 GitHub 上。</p>
+	</div>
+
+	<div class="prose">
+		{PROJECTS.length > 0 ? (
+			<ul class="project-grid">
+				{PROJECTS.map((project) => {
+					const primary = project.url ?? project.repo;
+					return (
+						<li>
+							<article class="project-card">
+								<div class="project-head">
+									<h2 class="project-name">
+										{primary ? (
+											<a href={primary} target="_blank" rel="noopener noreferrer">
+												{project.name}
+											</a>
+										) : (
+											project.name
+										)}
+									</h2>
+									{project.year && <span class="project-year">{project.year}</span>}
+								</div>
+								<p class="project-desc">{project.description}</p>
+								{project.tags && project.tags.length > 0 && (
+									<ul class="project-tags">
+										{project.tags.map((tag) => (
+											<li>{tag}</li>
+										))}
+									</ul>
+								)}
+								{(project.url || project.repo) && (
+									<p class="project-links">
+										{project.url && (
+											<a href={project.url} target="_blank" rel="noopener noreferrer">
+												网站 ↗
+											</a>
+										)}
+										{project.repo && (
+											<a href={project.repo} target="_blank" rel="noopener noreferrer">
+												源码 ↗
+											</a>
+										)}
+									</p>
+								)}
+							</article>
+						</li>
+					);
+				})}
+			</ul>
+		) : (
+			<p class="empty">还没有项目，先留个位置。</p>
+		)}
+	</div>
+
+	<div class="prose more">
+		<p>
+			更多实验在 <a href={GITHUB} target="_blank" rel="noopener noreferrer">GitHub</a> ↗
+		</p>
+	</div>
+</BaseLayout>
+
+<style>
+	.page-head {
+		margin-bottom: 1.75rem;
+	}
+
+	.project-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+		gap: 0.75rem;
+		margin: 0;
+	}
+
+	.prose .project-grid > li {
+		padding-left: 0;
+	}
+
+	.prose .project-grid > li::before {
+		display: none;
+	}
+
+	.project-card {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		padding: 1rem 1.1rem;
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		transition:
+			border-color 0.2s ease,
+			background-color 0.2s ease,
+			transform 0.2s ease;
+	}
+
+	.project-card:hover {
+		border-color: var(--fg-light);
+		background-color: var(--code-bg);
+		transform: translateY(-2px);
+	}
+
+	.project-head {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 0.75rem;
+	}
+
+	.prose .project-name {
+		margin: 0;
+		font-size: 1.05rem;
+		font-weight: 600;
+		line-height: 1.4;
+	}
+
+	.project-name a {
+		color: var(--fg-deeper);
+	}
+
+	.project-name a:hover {
+		text-decoration: underline;
+		text-decoration-color: var(--fg-light);
+	}
+
+	.project-year {
+		flex: none;
+		color: var(--fg-light);
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+	}
+
+	.prose .project-desc {
+		margin: 0.35rem 0 0;
+		color: var(--fg);
+		font-size: 0.9rem;
+		line-height: 1.6;
+	}
+
+	.prose .project-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.35rem;
+		margin: 0.8rem 0 0;
+		padding: 0;
+	}
+
+	.prose .project-tags > li {
+		margin: 0;
+		padding: 0.05rem 0.45rem;
+		border: 1px solid var(--border);
+		border-radius: 999px;
+		color: var(--fg-light);
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		line-height: 1.6;
+	}
+
+	.prose .project-tags > li::before {
+		display: none;
+	}
+
+	.prose .project-links {
+		display: flex;
+		gap: 1rem;
+		margin: auto 0 0;
+		padding-top: 0.9rem;
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
+	}
+
+	.project-links a {
+		color: var(--fg-light);
+	}
+
+	.project-links a:hover {
+		color: var(--fg-deeper);
+		text-decoration: none;
+	}
+
+	.empty {
+		padding: 2rem 1.25rem;
+		border: 1px dashed var(--border);
+		border-radius: var(--radius);
+		color: var(--fg-light);
+		text-align: center;
+	}
+
+	.more {
+		margin-top: 1.25rem;
+		font-family: var(--font-mono);
+		font-size: 0.85rem;
+		opacity: 0.6;
+	}
+
+	.more a:hover {
+		opacity: 0.75;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.project-card {
+			transition: none;
+		}
+	}
+</style>

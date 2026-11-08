@@ -1,67 +1,41 @@
 # ratlog
 
-个人博客，使用 [Astro](https://astro.build) 构建。视觉风格参考 [antfu.me](https://antfu.me)：极简排版、65ch 正文宽度、明暗主题、年份分组文章列表。
+一个使用 [Astro](https://astro.build) 构建的个人博客。极简排版、65ch 正文宽度、明暗主题、年份分组文章列表，视觉风格参考 [antfu.me](https://antfu.me)。
 
-## 写文章
+## 特性
 
-在 `src/content/blog/` 下新建 `.md` 或 `.mdx` 文件：
+- 纯静态输出，构建快，部署简单
+- Inter + DM Mono 字体，正文 65ch
+- 明暗主题切换，localStorage 记忆，无闪烁
+- 文章按年份分组，支持中文 / 英文 / 日文标签
+- 自动估算阅读时长
+- RSS、Sitemap、代码高亮
+- 友链页与响应式布局
+- 项目页展示作品（`/projects`）
 
-```md
----
-title: '文章标题'
-description: '一句话摘要，会用于 SEO 和 RSS'
-pubDate: 'Nov 07 2026'
-lang: zh
----
+## 快速开始
 
-正文……
+```bash
+pnpm install
+pnpm dev
 ```
 
-可选字段：
+打开 <http://localhost:4321> 即可预览。
 
-| 字段          | 说明                                        |
-| ------------- | ------------------------------------------- |
-| `updatedDate` | 最后更新时间                                |
-| `lang`        | `zh` / `en` / `ja`，显示在列表上的语言标签  |
-| `draft`       | `true` 时不会出现在列表、RSS 和构建结果中    |
+## 文档
 
-阅读时长会根据正文自动估算（中文 400 字/分钟，英文 200 词/分钟）。
+- [使用手册](docs/usage.md)：写文章、加友链、加项目、改站点信息、部署
 
-## 加友链
+## 技术栈
 
-编辑 `src/data/friends.ts`，复制一行改成对方的站点信息：
+Astro · TypeScript · Shiki（vitesse-light / vitesse-dark）· Astro Fonts
 
-```ts
-{ name: 'Antfu', url: 'https://antfu.me', description: 'Vue 核心团队成员。' }
-```
+## 链接
 
-`avatar` 可选，不填会显示站点名首字母。页面在 `/friends`，顶部导航已有入口。
+- GitHub：<https://github.com/Bigrat-wl>
+- 友链页：`/friends`
+- 项目页：`/projects`
 
-## 改站点信息
+## 许可
 
-- `src/consts.ts`：站点标题、描述、作者、社交链接、邮箱
-- `astro.config.mjs`：站点域名、字体、代码高亮主题
-- `src/components/Logo.astro` 和 `public/favicon.svg`：站点图标
-- `src/styles/global.css`：配色、排版、动画等全局样式
-
-## 常用命令
-
-| 命令           | 作用                       |
-| -------------- | -------------------------- |
-| `pnpm install` | 安装依赖                   |
-| `pnpm dev`     | 启动开发服务器（4321）     |
-| `pnpm build`   | 构建到 `dist/`             |
-| `pnpm preview` | 本地预览构建结果           |
-
-## 结构
-
-```text
-src/
-├── components/     # Header、Footer、Logo、Icon、日期
-├── content/blog/   # Markdown / MDX 文章
-├── data/           # 友链数据
-├── layouts/        # BaseLayout、BlogPost
-├── pages/          # 首页、/blog、/about、/friends、RSS、404
-├── styles/         # global.css
-└── utils/          # 阅读时长估算
-```
+文章内容采用 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)。
