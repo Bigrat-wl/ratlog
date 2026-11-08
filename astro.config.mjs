@@ -6,7 +6,7 @@ import { defineConfig, fontProviders } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://blog.ratzu.art', // TODO: 确认最终域名
+	site: 'https://blog.ratzu.art',
 	integrations: [mdx(), sitemap()],
 	markdown: {
 		shikiConfig: {
