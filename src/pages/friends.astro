@@ -1,0 +1,228 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { EMAIL, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { FRIENDS } from '../data/friends';
+
+const siteUrl = Astro.site ? new URL('/', Astro.site).href : '/';
+
+const hostname = (url: string) => {
+	try {
+		return new URL(url).hostname.replace(/^www\./, '');
+	} catch {
+		return url;
+	}
+};
+
+const initial = (name: string) => name.trim().charAt(0).toUpperCase();
+---
+
+<BaseLayout title="Friends" description="友链：一些我常读的博客和站点。">
+	<div class="prose page-head">
+		<h1>Friends</h1>
+		<p>一些我常读的博客和站点。想交换友链，看页面底部。</p>
+	</div>
+
+	<div class="prose">
+		{FRIENDS.length > 0 ? (
+			<ul class="friend-grid">
+				{FRIENDS.map((friend) => (
+					<li>
+						<a
+							class="friend-card"
+							href={friend.url}
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							{friend.avatar ? (
+								<img
+									class="avatar"
+									src={friend.avatar}
+									alt=""
+									width="40"
+									height="40"
+									loading="lazy"
+								/>
+							) : (
+								<span class="avatar avatar-fallback" aria-hidden="true">
+									{initial(friend.name)}
+								</span>
+							)}
+							<span class="friend-body">
+								<span class="friend-name">{friend.name}</span>
+								<span class="friend-desc">{friend.description}</span>
+								<span class="friend-host">{hostname(friend.url)}</span>
+							</span>
+						</a>
+					</li>
+				))}
+			</ul>
+		) : (
+			<p class="empty">友链还空着，欢迎来交换。</p>
+		)}
+	</div>
+
+	<div class="prose apply">
+		<h2>交换友链</h2>
+		<p>欢迎交换友链。请先在你的站点加上本站，然后发邮件告诉我：</p>
+		<ul>
+			<li>站点名称</li>
+			<li>站点地址</li>
+			<li>一句话介绍</li>
+		</ul>
+		<p>
+			发到 <a href={`mailto:${EMAIL}`}><code>{EMAIL}</code></a>。
+		</p>
+
+		<h2>本站信息</h2>
+		<dl class="site-info">
+			<div>
+				<dt>名称</dt>
+				<dd>{SITE_TITLE}</dd>
+			</div>
+			<div>
+				<dt>链接</dt>
+				<dd><a href={siteUrl}>{siteUrl}</a></dd>
+			</div>
+			<div>
+				<dt>描述</dt>
+				<dd>{SITE_DESCRIPTION}</dd>
+			</div>
+		</dl>
+	</div>
+</BaseLayout>
+
+<style>
+	.page-head {
+		margin-bottom: 1.75rem;
+	}
+
+	.friend-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+		gap: 0.75rem;
+		margin: 0;
+	}
+
+	.prose .friend-grid > li {
+		padding-left: 0;
+	}
+
+	.prose .friend-grid > li::before {
+		display: none;
+	}
+
+	.friend-card {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.75rem;
+		height: 100%;
+		padding: 0.9rem 1rem;
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		transition:
+			border-color 0.2s ease,
+			background-color 0.2s ease,
+			transform 0.2s ease;
+	}
+
+	.friend-card:hover {
+		border-color: var(--fg-light);
+		background-color: var(--code-bg);
+		text-decoration: none;
+		transform: translateY(-2px);
+	}
+
+	.avatar {
+		flex: none;
+		width: 2.5rem;
+		height: 2.5rem;
+		margin: 0;
+		border-radius: 50%;
+		object-fit: cover;
+	}
+
+	.avatar-fallback {
+		display: grid;
+		place-items: center;
+		border: 1px solid var(--border);
+		background-color: var(--code-bg);
+		color: var(--fg-deep);
+		font-family: var(--font-mono);
+		font-size: 1rem;
+		font-weight: 600;
+		text-transform: uppercase;
+	}
+
+	.friend-body {
+		display: flex;
+		flex-direction: column;
+		gap: 0.125rem;
+		min-width: 0;
+	}
+
+	.friend-name {
+		color: var(--fg-deeper);
+		font-weight: 600;
+		line-height: 1.4;
+	}
+
+	.friend-desc {
+		color: var(--fg);
+		font-size: 0.875rem;
+		line-height: 1.5;
+	}
+
+	.friend-host {
+		overflow: hidden;
+		color: var(--fg-light);
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.empty {
+		padding: 2rem 1.25rem;
+		border: 1px dashed var(--border);
+		border-radius: var(--radius);
+		color: var(--fg-light);
+		text-align: center;
+	}
+
+	.apply {
+		margin-top: 2.5rem;
+	}
+
+	.site-info {
+		margin: 0;
+		font-size: 0.9375rem;
+	}
+
+	.site-info > div {
+		display: flex;
+		gap: 1rem;
+		padding: 0.4rem 0;
+		border-bottom: 1px solid var(--border);
+	}
+
+	.site-info > div:last-child {
+		border-bottom: 0;
+	}
+
+	.site-info dt {
+		flex: none;
+		width: 3.5rem;
+		color: var(--fg-light);
+	}
+
+	.site-info dd {
+		margin: 0;
+		word-break: break-all;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.friend-card {
+			transition: none;
+		}
+	}
+</style>

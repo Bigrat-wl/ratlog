@@ -6,30 +6,36 @@ import { defineConfig, fontProviders } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://example.com',
+	site: 'https://blog.ratzu.art', // TODO: 确认最终域名
 	integrations: [mdx(), sitemap()],
+	markdown: {
+		shikiConfig: {
+			// 与 antfu.me 同款代码主题，浅色 / 深色自动切换
+			themes: {
+				light: 'vitesse-light',
+				dark: 'vitesse-dark',
+			},
+			wrap: false,
+		},
+	},
 	fonts: [
 		{
-			provider: fontProviders.local(),
-			name: 'Atkinson',
-			cssVariable: '--font-atkinson',
-			fallbacks: ['sans-serif'],
-			options: {
-				variants: [
-					{
-						src: ['./src/assets/fonts/atkinson-regular.woff'],
-						weight: 400,
-						style: 'normal',
-						display: 'swap',
-					},
-					{
-						src: ['./src/assets/fonts/atkinson-bold.woff'],
-						weight: 700,
-						style: 'normal',
-						display: 'swap',
-					},
-				],
-			},
+			provider: fontProviders.google(),
+			name: 'Inter',
+			cssVariable: '--font-inter',
+			weights: ['400 800'],
+			styles: ['normal'],
+			subsets: ['latin'],
+			fallbacks: ['ui-sans-serif', 'system-ui', 'sans-serif'],
+		},
+		{
+			provider: fontProviders.google(),
+			name: 'DM Mono',
+			cssVariable: '--font-dm-mono',
+			weights: ['400', '500'],
+			styles: ['normal'],
+			subsets: ['latin'],
+			fallbacks: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
 		},
 	],
 });

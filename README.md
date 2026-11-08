@@ -1,63 +1,67 @@
-# Astro Starter Kit: Blog
+# ratlog
 
-```sh
-pnpm create astro@latest -- --template blog
+个人博客，使用 [Astro](https://astro.build) 构建。视觉风格参考 [antfu.me](https://antfu.me)：极简排版、65ch 正文宽度、明暗主题、年份分组文章列表。
+
+## 写文章
+
+在 `src/content/blog/` 下新建 `.md` 或 `.mdx` 文件：
+
+```md
+---
+title: '文章标题'
+description: '一句话摘要，会用于 SEO 和 RSS'
+pubDate: 'Nov 07 2026'
+lang: zh
+---
+
+正文……
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+可选字段：
 
-Features:
+| 字段          | 说明                                        |
+| ------------- | ------------------------------------------- |
+| `updatedDate` | 最后更新时间                                |
+| `lang`        | `zh` / `en` / `ja`，显示在列表上的语言标签  |
+| `draft`       | `true` 时不会出现在列表、RSS 和构建结果中    |
 
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and Open Graph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
+阅读时长会根据正文自动估算（中文 400 字/分钟，英文 200 词/分钟）。
 
-## 🚀 Project Structure
+## 加友链
 
-Inside of your Astro project, you'll see the following folders and files:
+编辑 `src/data/friends.ts`，复制一行改成对方的站点信息：
+
+```ts
+{ name: 'Antfu', url: 'https://antfu.me', description: 'Vue 核心团队成员。' }
+```
+
+`avatar` 可选，不填会显示站点名首字母。页面在 `/friends`，顶部导航已有入口。
+
+## 改站点信息
+
+- `src/consts.ts`：站点标题、描述、作者、社交链接、邮箱
+- `astro.config.mjs`：站点域名、字体、代码高亮主题
+- `src/components/Logo.astro` 和 `public/favicon.svg`：站点图标
+- `src/styles/global.css`：配色、排版、动画等全局样式
+
+## 常用命令
+
+| 命令           | 作用                       |
+| -------------- | -------------------------- |
+| `pnpm install` | 安装依赖                   |
+| `pnpm dev`     | 启动开发服务器（4321）     |
+| `pnpm build`   | 构建到 `dist/`             |
+| `pnpm preview` | 本地预览构建结果           |
+
+## 结构
 
 ```text
-├── public/
-├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
+src/
+├── components/     # Header、Footer、Logo、Icon、日期
+├── content/blog/   # Markdown / MDX 文章
+├── data/           # 友链数据
+├── layouts/        # BaseLayout、BlogPost
+├── pages/          # 首页、/blog、/about、/friends、RSS、404
+├── styles/         # global.css
+└── utils/          # 阅读时长估算
 ```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
-
-## Credit
-
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).

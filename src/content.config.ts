@@ -14,6 +14,9 @@ const blog = defineCollection({
 			pubDate: z.coerce.date(),
 			updatedDate: z.coerce.date().optional(),
 			heroImage: z.optional(image()),
+			// 文章语言，用于列表上的小标签
+			lang: z.enum(['zh', 'en', 'ja']).optional(),
+			draft: z.boolean().optional(),
 		}),
 });
 

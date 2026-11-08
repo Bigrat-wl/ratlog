@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="404" description="页面不存在">
+	<div class="prose not-found slide-enter-content">
+		<p class="code">404</p>
+		<h1>这里什么都没有</h1>
+		<p>你要找的页面可能已经被移动，或者从来没有存在过。</p>
+		<p><a href="/">← 回到首页</a></p>
+	</div>
+</BaseLayout>
+
+<style>
+	.code {
+		margin-bottom: 0.5rem;
+		color: var(--fg-light);
+		font-family: var(--font-mono);
+		font-size: 0.875rem;
+		letter-spacing: 0.2em;
+	}
+</style>
