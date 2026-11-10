@@ -3,10 +3,21 @@ import Logo from './Logo.astro';
 import Icon from './Icon.astro';
 import { SOCIALS } from '../consts';
 
-const path = Astro.url.pathname;
+// 去掉尾斜杠再比较，否则 `/blog` 永远匹配不上 `/blog/`
+const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
 const github = SOCIALS.find((social) => social.name === 'GitHub');
 
-const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+const isActive = (href: string) => {
+	const target = href.replace(/\/+$/, '') || '/';
+	return target === '/' ? path === '/' : path === target || path.startsWith(`${target}/`);
+};
+
+const links = [
+	{ href: '/blog/', label: 'Blog', icon: 'article' as const },
+	{ href: '/about/', label: 'About', icon: 'user' as const },
+	{ href: '/projects/', label: 'Projects', icon: 'projects' as const },
+	{ href: '/friends/', label: 'Friends', icon: 'link' as const },
+];
 ---
 
 <header class="site-header">
@@ -15,50 +26,33 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
 	</a>
 
 	<nav class="site-nav" aria-label="主导航">
-		<a
-			href="/blog"
-			class:list={['nav-link', { active: isActive('/blog') }]}
-			title="Blog"
-		>
-			<span class="nav-label">Blog</span>
-			<Icon name="article" size={20} class="nav-icon" />
-		</a>
-		<a
-			href="/about"
-			class:list={['nav-link', { active: isActive('/about') }]}
-			title="About"
-		>
-			<span class="nav-label">About</span>
-			<Icon name="user" size={20} class="nav-icon" />
-		</a>
-		<a
-			href="/projects"
-			class:list={['nav-link', { active: isActive('/projects') }]}
-			title="Projects"
-		>
-			<span class="nav-label">Projects</span>
-			<Icon name="projects" size={20} class="nav-icon" />
-		</a>
-		<a
-			href="/friends"
-			class:list={['nav-link', { active: isActive('/friends') }]}
-			title="Friends"
-		>
-			<span class="nav-label">Friends</span>
-			<Icon name="link" size={20} class="nav-icon" />
-		</a>
+		{links.map((link) => {
+			const active = isActive(link.href);
+			return (
+				<a
+					href={link.href}
+					class:list={['nav-link', { active }]}
+					title={link.label}
+					aria-current={active ? 'page' : undefined}
+				>
+					<span class="nav-label">{link.label}</span>
+					<Icon name={link.icon} size={20} class="nav-icon" />
+				</a>
+			);
+		})}
 		{github && (
 			<a
 				href={github.url}
 				class="nav-link"
 				title={github.name}
+				aria-label={github.name}
 				target="_blank"
 				rel="noopener noreferrer"
 			>
 				<Icon name="github" size={20} />
 			</a>
 		)}
-		<a href="/rss.xml" class="nav-link" title="RSS">
+		<a href="/rss.xml" class="nav-link" title="RSS" aria-label="RSS">
 			<Icon name="rss" size={20} />
 		</a>
 		<button
@@ -74,7 +68,15 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
 	</nav>
 </header>
 
-<button id="scroll-top" class="scroll-top" type="button" aria-label="回到顶部" title="回到顶部">
+<button
+	id="scroll-top"
+	class="scroll-top"
+	type="button"
+	aria-label="回到顶部"
+	title="回到顶部"
+	aria-hidden="true"
+	tabindex="-1"
+>
 	<Icon name="arrow-up" size={20} />
 </button>
 
@@ -102,7 +104,13 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
 
 		const scrollTop = document.getElementById('scroll-top');
 		const onScroll = () => {
-			scrollTop?.classList.toggle('visible', window.scrollY > 480);
+			const visible = window.scrollY > 480;
+			scrollTop?.classList.toggle('visible', visible);
+			// 不显示时移出可达性树和 Tab 顺序，避免焦点落到隐形按钮上
+			if (scrollTop) {
+				scrollTop.setAttribute('aria-hidden', visible ? 'false' : 'true');
+				scrollTop.setAttribute('tabindex', visible ? '0' : '-1');
+			}
 		};
 		window.addEventListener('scroll', onScroll, { passive: true });
 		onScroll();
