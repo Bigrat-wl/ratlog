@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import FormattedDate from '../../components/FormattedDate.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+import { SITE_DESCRIPTION } from '../../consts';
 import { getReadingTime } from '../../utils/reading-time';
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
@@ -11,7 +11,8 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
 
 const groups: { year: number; posts: typeof posts }[] = [];
 for (const post of posts) {
-	const year = post.data.pubDate.getFullYear();
+	// pubDate 由 schema 归一到 UTC 零点，年份也必须按 UTC 读，避免跨年错位
+	const year = post.data.pubDate.getUTCFullYear();
 	const last = groups.at(-1);
 	if (last?.year === year) last.posts.push(post);
 	else groups.push({ year, posts: [post] });
@@ -21,11 +22,12 @@ const langLabel = { zh: '中文', en: 'EN', ja: '日本語' } as const;
 ---
 
 <BaseLayout title={`Blog`} description={SITE_DESCRIPTION}>
+	<h1 class="sr-only">Blog</h1>
 	<div class="prose list-head">
-		<div class="list-tabs">
-			<a class="active" href="/blog">Blog</a>
-			<a href="/about">About</a>
-		</div>
+		<nav class="list-tabs" aria-label="Blog 与 About">
+			<a class="active" href="/blog/" aria-current="page">Blog</a>
+			<a href="/about/">About</a>
+		</nav>
 	</div>
 
 	<div class="prose post-list">

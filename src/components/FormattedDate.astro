@@ -7,12 +7,16 @@ interface Props {
 
 const { date, format = 'long' } = Astro.props;
 
-const options: Intl.DateTimeFormatOptions =
-	format === 'month-day'
+// 日期已由 content schema 归一到 UTC 零点，格式化时也必须按 UTC 读，
+// 否则东八区会把 6 日 16:00Z 显示成 7 日。
+const options: Intl.DateTimeFormatOptions = {
+	timeZone: 'UTC',
+	...(format === 'month-day'
 		? { month: 'short', day: 'numeric' }
-		: { year: 'numeric', month: 'short', day: 'numeric' };
+		: { year: 'numeric', month: 'short', day: 'numeric' }),
+};
+
+const value = date.toISOString().slice(0, 10);
 ---
 
-<time datetime={date.toISOString()}>
-	{date.toLocaleDateString('en-US', options)}
-</time>
+<time datetime={value}>{date.toLocaleDateString('en-US', options)}</time>
