@@ -24,7 +24,8 @@ pnpm dev
 
 ## 文档
 
-- [使用手册](docs/usage.md)：写文章、加友链、加项目、改站点信息、部署
+- [使用手册](docs/usage.md)：加友链、加项目、改站点信息、部署
+- [写文章指南](docs/writing.md)：frontmatter 字段、Markdown/MDX 语法、常见坑与报错
 
 ## 技术栈
 
