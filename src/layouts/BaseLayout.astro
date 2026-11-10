@@ -10,15 +10,35 @@ interface Props {
 	image?: ImageMetadata;
 	lang?: string;
 	class?: string;
+	type?: 'website' | 'article';
+	pubDate?: Date;
+	updatedDate?: Date;
 }
 
-const { title, description, image, lang = 'zh-CN', class: className } = Astro.props;
+const {
+	title,
+	description,
+	image,
+	lang = 'zh-CN',
+	class: className,
+	type = 'website',
+	pubDate,
+	updatedDate,
+} = Astro.props;
 ---
 
 <!doctype html>
 <html lang={lang}>
 	<head>
-		<BaseHead title={title} description={description} image={image} />
+		<BaseHead
+			title={title}
+			description={description}
+			image={image}
+			lang={lang}
+			type={type}
+			pubDate={pubDate}
+			updatedDate={updatedDate}
+		/>
 	</head>
 	<body>
 		<a class="skip-link" href="#main">跳到正文</a>

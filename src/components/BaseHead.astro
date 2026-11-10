@@ -2,19 +2,47 @@
 // Import the global.css file here so that it is included on
 // all pages through the use of the <BaseHead /> component.
 import '../styles/global.css';
-import { Font } from 'astro:assets';
+import { Font, getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
-import { SITE_TITLE } from '../consts';
+import { AUTHOR, SITE_TITLE } from '../consts';
 
 interface Props {
 	title: string;
 	description: string;
 	image?: ImageMetadata;
+	/** 文章页为 article，其余保持 website */
+	type?: 'website' | 'article';
+	/** 文章页传入发布 / 更新时间，用于 og:article 与 JSON-LD */
+	pubDate?: Date;
+	updatedDate?: Date;
+	lang?: string;
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const { title, description, image } = Astro.props;
+const { title, description, image, type = 'website', pubDate, updatedDate, lang } = Astro.props;
 const pageTitle = title === SITE_TITLE ? title : `${title} · ${SITE_TITLE}`;
+
+// 分享图统一走 sharp 压到 1200px 宽的 PNG：原始 JPG 可能上万像素，
+// 部分爬虫会因此拿不到图，也不该让读者加载原图。
+const ogImage = image
+	? new URL((await getImage({ src: image, width: 1200, format: 'png' })).src, Astro.site)
+	: undefined;
+
+const jsonLd =
+	pubDate && type === 'article'
+		? {
+				'@context': 'https://schema.org',
+				'@type': 'BlogPosting',
+				headline: title,
+				description,
+				datePublished: pubDate.toISOString(),
+				...(updatedDate ? { dateModified: updatedDate.toISOString() } : {}),
+				...(ogImage ? { image: [ogImage.href] } : {}),
+				inLanguage: lang ?? 'zh-CN',
+				author: { '@type': 'Person', name: AUTHOR },
+				mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalURL.href },
+			}
+		: undefined;
 ---
 
 <!-- 在首次绘制前恢复主题，避免闪烁 -->
@@ -36,6 +64,7 @@ const pageTitle = title === SITE_TITLE ? title : `${title} · ${SITE_TITLE}`;
 <meta name="color-scheme" content="light dark" />
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#050505" media="(prefers-color-scheme: dark)" />
+<meta name="author" content={AUTHOR} />
 <link rel="icon" href="/favicon.ico?v=2" sizes="32x32" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -60,14 +89,24 @@ const pageTitle = title === SITE_TITLE ? title : `${title} · ${SITE_TITLE}`;
 <meta name="description" content={description} />
 
 <!-- Open Graph / Facebook -->
-<meta property="og:type" content="website" />
-<meta property="og:url" content={Astro.url} />
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={SITE_TITLE} />
+<meta property="og:url" content={canonicalURL} />
 <meta property="og:title" content={pageTitle} />
 <meta property="og:description" content={description} />
-{image && <meta property="og:image" content={new URL(image.src, Astro.url)} />}
+{ogImage && <meta property="og:image" content={ogImage} />}
+{ogImage && <meta property="og:image:width" content="1200" />}
+{pubDate && type === 'article' && (
+	<meta property="article:published_time" content={pubDate.toISOString()} />
+)}
+{updatedDate && type === 'article' && (
+	<meta property="article:modified_time" content={updatedDate.toISOString()} />
+)}
 
 <!-- Twitter -->
-<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
 <meta name="twitter:title" content={pageTitle} />
 <meta name="twitter:description" content={description} />
-{image && <meta name="twitter:image" content={new URL(image.src, Astro.url)} />}
+{ogImage && <meta name="twitter:image" content={ogImage} />}
+
+{jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
