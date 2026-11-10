@@ -1,12 +1,13 @@
 {
-	"name": "Rat",
-	"short_name": "Rat",
+	"name": "ratlog",
+	"short_name": "ratlog",
 	"description": "记录技术、项目与思考。",
 	"start_url": "/",
 	"scope": "/",
 	"display": "standalone",
 	"background_color": "#ffffff",
 	"theme_color": "#ffffff",
+	"lang": "zh-CN",
 	"icons": [
 		{
 			"src": "/icon-192.png",
