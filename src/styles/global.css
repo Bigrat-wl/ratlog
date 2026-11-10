@@ -7,6 +7,7 @@
 	--fg-light: #888;
 	--border: rgba(125, 125, 125, 0.3);
 	--code-bg: rgba(170, 170, 170, 0.1);
+	--c-scrollbar: #eee;
 	--prose-max-width: 65ch;
 	--radius: 6px;
 
@@ -28,6 +29,7 @@ html.dark {
 	--fg-light: #888;
 	--border: rgba(136, 136, 136, 0.3);
 	--code-bg: rgba(170, 170, 170, 0.12);
+	--c-scrollbar: #111;
 
 	color-scheme: dark;
 }
@@ -83,7 +85,7 @@ button {
 }
 
 ::selection {
-	background-color: rgba(110, 231, 183, 0.35);
+	background-color: rgba(136, 136, 136, 0.27);
 }
 
 /* ---------- 正文排版 ---------- */
@@ -137,6 +139,7 @@ button {
 	color: inherit;
 	font-size: 1.25em;
 	font-weight: 600;
+	line-height: 1.6;
 	opacity: 0.7;
 }
 
@@ -144,6 +147,7 @@ button {
 	margin-top: 1.5em;
 	margin-bottom: 0.5em;
 	font-weight: 600;
+	line-height: 1.5;
 }
 
 .prose h5,
@@ -166,19 +170,24 @@ button {
 	margin-bottom: 1.25em;
 }
 
-.prose a {
+/* 正文里的行内链接：常显一条细下划线（与 antfu.me 一致）。
+   限定在段落 / 列表 / 表格等文本容器内，避免把卡片、列表行这类
+   整块可点击组件也画上横线。 */
+.prose :is(p, li, td, th, blockquote, figcaption, dd, dt, h1, h2, h3, h4, h5, h6) a:not(.border, .header-anchor) {
 	color: var(--fg-deeper);
-	font-weight: 500;
+	font-weight: inherit;
+	border-bottom: 1px solid rgba(125, 125, 125, 0.3);
 	text-decoration: none;
-	text-underline-offset: 3px;
-	text-decoration-thickness: 1px;
-	text-decoration-color: var(--border);
-	transition: text-decoration-color 0.15s ease;
+	transition: border-color 0.3s ease-in-out;
 }
 
-.prose a:hover {
-	text-decoration: underline;
-	text-decoration-color: var(--fg-light);
+.prose :is(p, li, td, th, blockquote, figcaption, dd, dt, h1, h2, h3, h4, h5, h6) a:not(.border, .header-anchor):hover {
+	border-bottom-color: var(--fg);
+	text-decoration: none;
+}
+
+.prose a code {
+	color: inherit;
 }
 
 .prose strong,
@@ -188,15 +197,23 @@ button {
 }
 
 .prose em {
-	color: inherit;
+	color: var(--fg-deep);
+	font-family: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+	font-size: 1.05em;
+}
+
+.prose s {
+	opacity: 0.5;
 }
 
 .prose small {
 	font-size: 0.875em;
 }
 
+/* 分隔线：antfu 风格是居中的短横，而不是通栏 */
 .prose hr {
-	margin: 3em 0;
+	width: 50px;
+	margin: 2em auto;
 	border: none;
 	border-top: 1px solid var(--border);
 }
@@ -206,6 +223,14 @@ button {
 .prose h3 + *,
 .prose h4 + * {
 	margin-top: 0;
+}
+
+.prose h2 code {
+	font-size: 0.875em;
+}
+
+.prose h3 code {
+	font-size: 0.9em;
 }
 
 /* 列表：去掉默认符号，用 antfu 风格的小圆点 / 数字 */
@@ -268,23 +293,47 @@ html.dark .prose ul > li::before {
 	margin-bottom: 0.75em;
 }
 
+/* 任务列表自带 checkbox，不要再叠一个圆点 */
+.prose .contains-task-list > li::before {
+	display: none;
+}
+
+.prose .contains-task-list > li {
+	padding-left: 0;
+}
+
+.prose .contains-task-list input[type='checkbox'] {
+	margin-right: 0.4em;
+	vertical-align: middle;
+	accent-color: var(--fg-light);
+}
+
 .prose li > p {
 	margin-top: 0.75em;
 	margin-bottom: 0.75em;
 }
 
-/* 引用 */
+/* 引用：antfu 用正体、负左边距，正文整体压到 0.7 透明度 */
 .prose blockquote {
-	margin: 1.6em 0;
-	padding-left: 1em;
+	margin: 1.6em 0 1.6em -1.1em;
+	padding: 0.5em 1em;
 	border-left: 0.25rem solid var(--border);
 	color: inherit;
-	font-style: italic;
-	font-weight: 500;
+	font-style: normal;
+	font-weight: 400;
+	line-height: 1.6;
 }
 
-.prose blockquote p {
-	margin: 0.5em 0;
+.prose blockquote > * {
+	opacity: 0.7;
+}
+
+.prose blockquote > :first-child {
+	margin-top: 0;
+}
+
+.prose blockquote > :last-child {
+	margin-bottom: 0;
 }
 
 /* 行内代码与代码块 */
@@ -301,14 +350,18 @@ html.dark .prose ul > li::before {
 
 .prose pre {
 	margin: 1.75em 0;
-	padding: 0.9em 1.15em;
+	padding: 0.86em 1.15em;
 	overflow-x: auto;
-	border: 1px solid var(--border);
 	border-radius: var(--radius);
 	background-color: #fafafa;
 	font-family: var(--font-mono);
 	font-size: 0.875em;
 	line-height: 1.7;
+}
+
+/* Shiki 会把浅色底色内联到 pre 上，这里统一压成 antfu 的 #fafafa */
+.prose pre.astro-code {
+	background-color: #fafafa !important;
 }
 
 .prose pre code {
@@ -402,6 +455,40 @@ html.dark .prose pre {
 	font-size: 0.875em;
 }
 
+/* 正文标题锚点：平时隐形，hover / 聚焦后出现 */
+.prose .header-anchor {
+	float: left;
+	margin-top: 0.125em;
+	margin-left: -1.2em;
+	padding-right: 0.5em;
+	border: 0;
+	color: inherit;
+	font-size: 0.85em;
+	opacity: 0;
+	text-decoration: none;
+	transition: opacity 0.2s ease;
+}
+
+.prose h1:hover .header-anchor,
+.prose h2:hover .header-anchor,
+.prose h3:hover .header-anchor,
+.prose h4:hover .header-anchor,
+.prose h5:hover .header-anchor,
+.prose h6:hover .header-anchor,
+.prose h1:focus-within .header-anchor,
+.prose h2:focus-within .header-anchor,
+.prose h3:focus-within .header-anchor,
+.prose h4:focus-within .header-anchor,
+.prose h5:focus-within .header-anchor,
+.prose h6:focus-within .header-anchor {
+	opacity: 0.5;
+}
+
+/* 锚点用 id 定位，需要留出 sticky header 的空间 */
+.prose :is(h1, h2, h3, h4, h5, h6) {
+	scroll-margin-top: 2rem;
+}
+
 /* ---------- 入场动画 ---------- */
 
 @keyframes slide-enter {
@@ -474,8 +561,48 @@ html.dark .prose pre {
 	white-space: nowrap;
 }
 
+/* 键盘聚焦统一给个可见指示，鼠标点击不触发 */
+:focus-visible {
+	outline: 2px solid var(--fg-light);
+	outline-offset: 2px;
+	border-radius: 3px;
+}
+
+/* ---------- 滚动条 ---------- */
+
+html {
+	scrollbar-color: var(--c-scrollbar) var(--c-bg);
+}
+
 @media (max-width: 640px) {
 	main {
 		padding: 1.5rem 1.25rem 1rem;
+	}
+}
+
+/* ---------- 打印 ---------- */
+
+@media print {
+	.site-header,
+	.site-footer,
+	.post-foot,
+	.scroll-top,
+	.skip-link {
+		display: none;
+	}
+
+	main {
+		padding: 0;
+	}
+
+	/* 打印时去掉装饰性下划线，省墨 */
+	.prose :is(p, li, td, th, blockquote, figcaption, dd, dt, h1, h2, h3, h4, h5, h6)
+		a:not(.border, .header-anchor) {
+		border-bottom: 0;
+	}
+
+	.slide-enter,
+	.slide-enter-content > * {
+		animation: none;
 	}
 }
